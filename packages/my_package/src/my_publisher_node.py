@@ -23,6 +23,13 @@ class MyPublisherNode(DTROS):
         rospy.on_shutdown()
         
     def simple_track(self):
+        def correct_to_right():
+            speed.vel_right = 0.0
+            speed.vel_left = medium
+        def correct_to_left():
+            speed.vel_left = 0.0
+            speed.vel_right = medium
+        
         last_value = 0
         rate = rospy.Rate(20) # 20Hz
         slow = 0.25
@@ -31,18 +38,28 @@ class MyPublisherNode(DTROS):
         while not rospy.is_shutdown():
             bus = SMBus(1)
             read = bus.read_byte_data(62,17)
+
+            if read != 0:
+                last_value = read
+            
+            if read == 0:
+                if last_value < 24:     # went left
+                    correct_to_right()
+                elif last_value >= 24:  # went right 
+                    correct_to_left()
+
             if read == 8 or read == 16 or read == 24: # FORWARD
-                speed.vel_left = fast   
-                speed.vel_right = fast
+                speed.vel_left = medium   
+                speed.vel_right = medium
             elif 0 < read < 8 or read == 12:  # STEER LEFT 
-                speed.vel_left = fast
-                speed.vel_right = speed.vel_right * 0.8
+                speed.vel_left = medium
+                speed.vel_right = speed.vel_right * 0.1
             elif 24 < read < 255:      # STEER RIGHT
-                speed.vel_right = fast
-                speed.vel_left = speed.vel_right * 0.8
-            else:
+                speed.vel_right = medium
+                speed.vel_left = speed.vel_right * 0.1
+            """   else:
                 speed.vel_left = 0
-                speed.vel_right = 0
+                speed.vel_right = 0 """
 
             self.pub.publish(speed)
             rate.sleep()
