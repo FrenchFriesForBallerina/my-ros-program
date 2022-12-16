@@ -22,26 +22,35 @@ class MyPublisherNode(DTROS):
         self.pub.publish(speed)
         rospy.on_shutdown()
         
-    def run(self):
-        # publish message 20x every second
+    def simple_track(self):
+        last_value = 0
         rate = rospy.Rate(20) # 20Hz
+        slow = 0.25
+        medium = 0.50
+        fast = 2
         while not rospy.is_shutdown():
             bus = SMBus(1)
-            
             read = bus.read_byte_data(62,17)
-            if read == 1:
-                speed.vel_left = 0.25
-                speed.vel_right = 0.25
-            elif read == 3:
-                speed.vel_left = 0.25
-                speed.vel_right = 0.25
+            if read == 8 or read == 16 or read == 24: # FORWARD
+                speed.vel_left = fast   
+                speed.vel_right = fast
+            elif 0 < read < 8 or read == 12:  # STEER LEFT 
+                speed.vel_left = fast
+                speed.vel_right = speed.vel_right * 0.8
+            elif 24 < read < 255:      # STEER RIGHT
+                speed.vel_right = fast
+                speed.vel_left = speed.vel_right * 0.8
             else:
-                speed.vel_left = 0.25
-                speed.vel_right = 0.25
+                speed.vel_left = 0
+                speed.vel_right = 0
+
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
             print(read)
+
+    def run(self):
+        self.simple_track()
             
 if __name__ == '__main__':
     # create the node
