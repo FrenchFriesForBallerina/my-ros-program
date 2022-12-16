@@ -1,0 +1,46 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/aleksa/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/adafruit_drivers/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/button_driver/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/camera_driver/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/complete_image_pipeline/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/display_driver/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/easy_algo/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/easy_logs/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/easy_node/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/easy_regression/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/explicit_coordinator/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/fsm/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/hat_driver/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/lane_control/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/lane_filter/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/led_detection/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/led_driver/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/line_detector/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/navigation/include/**",
+        "/home/aleksa/catkin_ws/src/opencv_apps/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/robot_http_api/include/**",
+        "/home/aleksa/catkin_ws/src/turtlebot3_simulations/turtlebot3_fake/include/**",
+        "/home/aleksa/catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+        "/home/aleksa/catkin_ws/src/dt-core/packages/visualization_tools/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/wheel_encoder/include/**",
+        "/home/aleksa/catkin_ws/src/dt-duckiebot-interface/packages/wheels_driver/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import rospy
-import smbus2
 from duckietown.dtros import DTROS, NodeType
 from std_msgs.msg import String
 from smbus2 import SMBus
@@ -28,9 +27,17 @@ class MyPublisherNode(DTROS):
         rate = rospy.Rate(20) # 20Hz
         while not rospy.is_shutdown():
             bus = SMBus(1)
-            speed.vel_left = 0.25
-            speed.vel_right = 0.25
+            
             read = bus.read_byte_data(62,17)
+            if read == 1:
+                speed.vel_left = 0.25
+                speed.vel_right = 0.25
+            elif read == 3:
+                speed.vel_left = 0.25
+                speed.vel_right = 0.25
+            else:
+                speed.vel_left = 0.25
+                speed.vel_right = 0.25
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
