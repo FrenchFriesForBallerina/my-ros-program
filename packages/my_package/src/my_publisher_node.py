@@ -6,6 +6,9 @@ from std_msgs.msg import String
 from smbus2 import SMBus
 from duckietown_msgs.msg import WheelsCmdStamped
 
+device_aadress = 62
+registry_address = 17
+
 speed = WheelsCmdStamped()
 
 class MyPublisherNode(DTROS):
@@ -37,7 +40,7 @@ class MyPublisherNode(DTROS):
         fast = 2
         while not rospy.is_shutdown():
             bus = SMBus(1)
-            read = bus.read_byte_data(62,17)
+            read = bus.read_byte_data(device_aadress,registry_address)
 
             if read != 0:
                 last_value = read
@@ -57,10 +60,7 @@ class MyPublisherNode(DTROS):
             elif 24 < read < 255:      # STEER RIGHT
                 speed.vel_right = medium
                 speed.vel_left = speed.vel_right * 0.1
-            """   else:
-                speed.vel_left = 0
-                speed.vel_right = 0 """
-
+       
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
@@ -76,52 +76,3 @@ if __name__ == '__main__':
     node.run()
     # keep spinning
     rospy.spin()
-
-
- # previous:
-""" #!/usr/bin/env python3
-from smbus2 import SMBus
-import os
-import rospy
-from duckietown.dtros import DTROS, NodeType
-from std_msgs.msg import String
-
-class MyPublisherNode(DTROS):
-
-    # Open i2c bus 1 and read one byte from address 80, offset 0
-
-    def __init__(self, node_name):
-        # initialize the DTROS parent class
-        super(MyPublisherNode, self).__init__(node_name=node_name, node_type=NodeType.GENERIC)
-        # construct publisher
-        self.pub = rospy.Publisher('chatter', String, queue_size=10)
-
-    def run(self):
-        bus = SMBus(1)  #1
-        # publish message every 1 second
-        rate = rospy.Rate(1) # 1Hz
-        while not rospy.is_shutdown():
-            b = bus.read_byte_data(17, 62) #2
-            print(b)    #3
-            #message = "Hello from %s" % os.environ['VEHICLE_NAME']
-            #rospy.loginfo("Publishing message: '%s'" % message)
-            rospy.loginfo("byte data is: '%s'" % b)
-            #self.pub.publish(message)
-            self.pub.publish(b)
-            rate.sleep()
-        bus.close() # 4
-
-    
-
-if __name__ == '__main__':
-    # create the node
-    node = MyPublisherNode(node_name='my_publisher_node')
-    # run node
-
-   
-
-    node.run()
-    # keep spinning
-    rospy.spin()
-     """
-
