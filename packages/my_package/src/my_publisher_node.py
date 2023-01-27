@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import rospy
 from duckietown.dtros import DTROS, NodeType
 from std_msgs.msg import String
@@ -45,13 +44,17 @@ class MyPublisherNode(DTROS):
             speed.vel_right = medium
 
         def proportional(index):
-            Kp = index * 0.02
+            Kp = 0.1
+            # kp 0.1 speed 0.55, time 0.52.10
+            # kp 0.05 speed 0.55, time 0.53.14
+            # kp 0.05 speed 0.6, time 0.53 with errors
+            # kp 0.1 speed 0.6, time - lots of errors, too zigzaggy
+            # kp 0.075 speed 0.6, time - lots of errors
+            # kp 0.075 speed 0.55, time - errors, wheel gets stuck
+            # kp 0.08 speed 0.55, time - one error - goes onto neighbor lane
+            # kp 0.1 speed 0.53, time - errory
+            # kp 0.1 speed 0.5, time - error, not too bad, 0.59
 
-            # with 0.02 and speed 0.55: time 0.53 with errors
-            # with 0.022 and speed 0.55: time 0.54 with errors
-            # with 0.022 and speed 0.525: errors!
-            # with 0.02 and speed 0.525: time
-            
             error = target_sensor_position - index
             P = Kp * error
             speed.vel_right = medium + P
@@ -59,7 +62,6 @@ class MyPublisherNode(DTROS):
         
         last_value = 0
         rate = rospy.Rate(20) # 20Hz - code runs 20 times per second
-        # check https://answers.ros.org/question/264812/explanation-of-rospyrate/ 
         slow = 0.16
         medium = 0.55
         fast = 2
@@ -72,19 +74,16 @@ class MyPublisherNode(DTROS):
             leading_zeros = 8 - len(bits_block)
             bits = leading_zeros*'0' + bits_block
             
-            
             left, right = bits[:4], bits[4:]
 
             if read == 0:
                 if last_value < 24:     # went left
                     turn_right()
-                else:  # went right 
+                else:                   # went right 
                     turn_left()
             if read != 0:
                 last_value = read           
 
-            # calculate deviation from the centre
-            # find ones in bits
             indices = []
             for idx, value in enumerate(bits):
                 if value == '1':
@@ -102,12 +101,11 @@ class MyPublisherNode(DTROS):
                 if (left == '0001' and right == '1000'): # is going forward                 print("forward")
                     forward()
                 else:
-                    proportional(shift)
+                    proportional(shift) # if not going forward, then correct
 
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
-            #print(read)
 
     def run(self):
         self.simple_track()
@@ -120,4 +118,5 @@ if __name__ == '__main__':
     # keep spinning
     rospy.spin()
 
-    # https://se.mathworks.com/help/supportpkg/arduino/ref/arduino-robot-line-follower-application.html
+# https://se.mathworks.com/help/supportpkg/arduino/ref/arduino-robot-line-follower-application.html
+# check https://answers.ros.org/question/264812/explanation-of-rospyrate/ 
