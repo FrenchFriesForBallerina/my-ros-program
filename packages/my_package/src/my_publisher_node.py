@@ -2,6 +2,9 @@
 import os, rospy
 from csv import writer
 import subprocess
+from helper_functions import int_to_bitblock
+from Car import Car
+from PID_Controller import PID_Controller
 
 from duckietown.dtros import DTROS, NodeType
 from std_msgs.msg import String
@@ -24,13 +27,8 @@ speed = WheelsCmdStamped()
 error = 0
 last_error = 0
 
-def update_csv(lap_time, vehicle_speed, rate, P, I, D):
-    print("writing into file")
-    List = [lap_time, vehicle_speed, rate, P, I, D]
-    with open('results.csv', 'a') as f_object:
-        writer_object = writer(f_object)
-        writer_object.writerow(List)
-        f_object.close()
+car = Car(vehicle_speed)
+pid_controller = PID_Controller()
 
 class MyPublisherNode(DTROS):
     
@@ -39,13 +37,16 @@ class MyPublisherNode(DTROS):
         super(MyPublisherNode, self).__init__(node_name=node_name, node_type=NodeType.GENERIC)
         # construct publisher
         self.pub = rospy.Publisher('/weirdbot/wheels_driver_node/wheels_cmd', WheelsCmdStamped, queue_size=10)
-        
+
     def on_shutdown(self):
         speed.vel_left = 0
         speed.vel_right = 0
         self.pub.publish(speed)
         rospy.on_shutdown()
-        
+
+    print('car data:', car.speed, car.speed_right_wheel, car.speed_left_wheel)
+    print('pid controller data:', pid_controller.Kd, pid_controller.I)
+
     def simple_track(self):
         #location = os.environ['REPO_NAME']
         #print(location)
@@ -78,27 +79,9 @@ class MyPublisherNode(DTROS):
         while not rospy.is_shutdown():
             bus = SMBus(1)
             read = bus.read_byte_data(sparkfun_device_aadress,sparkfun_registry_address)
-            print('read is', read)       
-            bits_block = bin(read)[2:] #'01100000'
-            leading_zeros = 8 - len(bits_block)
-            bits = leading_zeros*'0' + bits_block
+                       
+            bits_block, sum, indices = int_to_bitblock(read)
             
-            #left, right = bits[:4], bits[4:]      
-
-            indices = []
-            for idx, value in enumerate(bits): 
-                if value == '1':
-                    print('bit index is', idx)
-                    indices.append(idx + 1)
-            
-            print(indices)
-            
-            sum = 0
-            average = 0
-
-            for i in indices:
-                sum += i
-
             if bits_block == '00000000':
                 print('OFF ROAD')
                 if 1 in last_value[4:]:    
@@ -121,11 +104,7 @@ class MyPublisherNode(DTROS):
                     forward()
                 else:
                     apply_controller(error, last_error) # if not going forward, then correct
-
-            print("update csv values", 0, vehicle_speed, rospy_rate, Kp, Ki, Kd)    
-            update_csv(0, 0, 0, Kp, Ki, Kd)
-
-
+            
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
