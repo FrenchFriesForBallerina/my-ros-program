@@ -5,9 +5,10 @@ def int_to_bitblock(read):
     indices = []
     s = 0
 
-    for idx, value in enumerate(bits): 
+    for idx, value in enumerate(bits):
         if value == '1':
-            indices.append(idx + 1)                    
+            indices.append(idx + 1)
             for i in indices:
                 s += i
-    return bits_block, s, indices
+
+    return bits, s, indices

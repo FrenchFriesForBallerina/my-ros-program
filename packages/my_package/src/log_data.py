@@ -1,4 +1,6 @@
 from csv import writer
+# import subprocess
+
 
 def update_csv(lap_time, vehicle_speed, rate, P, I, D):
     #print("writing into file")
