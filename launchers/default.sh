@@ -18,7 +18,8 @@ dt-launchfile-init
 # sleep 5
 #dt-exec rosrun my_package my_publisher_node.py
 #dt-exec rosrun my_package my_subscriber_node.py
-
+#dt-exec rosrun my_package my_subscriber_node1.py
+#dt-exec rosrun my_package my_subscriber_node2.py
 roslaunch my_package multiple_nodes.launch
 
 # ----------------------------------------------------------------------------

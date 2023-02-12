@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-import os
 import rospy
-from csv import writer
-import subprocess
 
 from helper_functions import int_to_bitblock
 from Car import Car
-from pid_controller import *
+from Pid_controller import PID_Controller
+from my_subscriber_node import MySubscriberNode
 
 from duckietown.dtros import DTROS, NodeType
 from std_msgs.msg import String
@@ -68,10 +66,12 @@ class MyPublisherNode(DTROS):
                 print('OFF ROAD')
                 print('bits block is', bits_block)
                 print('last read is', last_read)
-                if '1' in last_read[0:4]:
+                if '1' in last_read[4:]:
                     car.turn_right()
+                    print("turn right")
                 else:
                     car.turn_left()
+                    print("turn left")
 
             if bits_block != '00000000':
                 # this here
@@ -104,8 +104,11 @@ class MyPublisherNode(DTROS):
 if __name__ == '__main__':
     # create the node
     node = MyPublisherNode(node_name='my_publisher_node')
+    #node1 = MySubscriberNode(node_name='my_subscriber_node')
     # run node
     node.run()
+    # node1.run()
+
     # keep spinning
     rospy.spin()
 
