@@ -14,7 +14,16 @@ class Car():
         self.speed_right_wheel = 0.01 * self.velocity
         self.speed_left_wheel = self.velocity
 
+    def sharp_left(self):
+        print('sharp left')
+        self.speed_left_wheel = 0
+        self.speed_right_wheel = self.velocity * 0.8
+
+    def sharp_right(self):
+        print('sharp right')
+        self.speed_right_wheel = 0
+        self.speed_left_wheel = self.velocity * 0.8
+
     def forward(self):
-        print('go forward')
         self.speed_left_wheel = self.velocity
-        self.speed_right_wheel = self.velocity
+        self.speed_right_wheel = self.speed_left_wheel
