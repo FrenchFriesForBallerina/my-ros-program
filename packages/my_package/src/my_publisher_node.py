@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-from statistics import mean
 
-from helper_functions import int_to_bitblock
 from cruise_control import cruise_control
 from Car import Car
 from Pid_controller import PID_Controller
@@ -14,7 +12,7 @@ from duckietown_msgs.msg import WheelsCmdStamped
 sparkfun_device_aadress = 62
 sparkfun_registry_address = 17
 target_sensor_position = 4.5
-vehicle_speed = 0.6
+vehicle_speed = 0.1  # 0.6
 rospy_rate = 40
 
 Kp = 0.035
@@ -25,6 +23,13 @@ I = 0
 speed = WheelsCmdStamped()
 error = 0
 last_error = 0
+
+turn_left_at_junction = False
+turn_right_at_junction = False
+global roadsign_first_detection
+roadsign_first_detection = False
+global roadsign_confirmed
+roadsign_confirmed = False
 
 car = Car(vehicle_speed)
 pid_controller = PID_Controller(Kp, Ki, Kd, I, rospy_rate)
@@ -46,6 +51,7 @@ class MyPublisherNode(DTROS):
     def simple_track(self):
         global error
         global last_error
+
         rate = rospy.Rate(rospy_rate)
 
         while not rospy.is_shutdown():
