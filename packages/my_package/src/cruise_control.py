@@ -3,12 +3,13 @@ import re
 from helper_functions import int_to_bitblock
 from statistics import mean
 import time
+global roadsign_first_detection, roadsign_confirmed
 
 
 def cruise_control(error, last_error, read, target, pid_controller, car):
     bits_block, indices = int_to_bitblock(read)
     #print('bits_block is', bits_block)
-    branching_off_ahead(bits_block)
+    # branching_off_ahead(bits_block)
 
     if len(indices) != 0:
         last_error = error
@@ -20,9 +21,7 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
         car.speed_right_wheel = 0
 
 
-def branching_off_ahead(binary):  # '00110011'
-    roadsign_first_detection
-    roadsign_confirmed
+def branching_off_ahead(binary):  # '00110011
 
     m = re.search('^1+1?0+0?1+1?0+$', binary)
     if m:

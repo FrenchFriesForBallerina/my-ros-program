@@ -19,19 +19,22 @@ class PID_Controller():
             self.I = max(min(self.I, 0.2), -0.2)  # 2, -2
             D = err - last_error
             PID = (self.Kp * P) + (self.Ki * self.I * self.delta_t) + \
-                (self.Kd * D)
+                ((self.Kd * D) / self.delta_t)
             print("PID:", PID)
             print("P * self.Kp is:", P * self.Kp)
             print("self.Ki * self.I * self.delta_t is:",
                   self.Ki * self.I * self.delta_t)
             #print("self.Kd * D / self.delta_t is:", self.Kd * D / self.delta_t)
-            print("self.Kd * D is:", self.Kd * D)
+            print("self.Kd * D / self.delta_t is:", self.Kd * D / self.delta_t)
 
-            if car.velocity + PID >= 0:
+            car.speed_right_wheel = car.velocity + PID
+            car.speed_left_wheel = car.velocity - PID
+
+            """  if car.velocity + PID >= 0:
                 car.speed_right_wheel = car.velocity + PID
             else:
                 car.speed_right_wheel = 0
             if car.velocity - PID >= 0:
                 car.speed_left_wheel = car.velocity - PID
             else:
-                car.speed_left_wheel = 0
+                car.speed_left_wheel = 0 """

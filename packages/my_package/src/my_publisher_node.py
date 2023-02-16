@@ -12,12 +12,15 @@ from duckietown_msgs.msg import WheelsCmdStamped
 sparkfun_device_aadress = 62
 sparkfun_registry_address = 17
 target_sensor_position = 4.5
-vehicle_speed = 0.1  # 0.6
+vehicle_speed = 0.5  # 0.6
 rospy_rate = 40
 
-Kp = 0.035
+# speed 0.6 rospy rate 40, kp 0.525 ja teised 0 sõidab (ristmikel muidugi pea)
+Kp = 0.4
+# speed 0.6 rospy rate 40, kp 1.2 ja kp 1.5 ja teised 0 - tõmbleb koha peal
+# sama, aga 0.95 - tõmbleb ja liigub edasi
 Ki = 0
-Kd = 10 * Kp
+Kd = 0  # 10 * Kp
 I = 0
 
 speed = WheelsCmdStamped()
