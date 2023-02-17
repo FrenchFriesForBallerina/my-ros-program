@@ -29,9 +29,7 @@ last_error = 0
 
 turn_left_at_junction = False
 turn_right_at_junction = False
-global roadsign_first_detection
 roadsign_first_detection = False
-global roadsign_confirmed
 roadsign_confirmed = False
 
 car = Car(vehicle_speed)
@@ -77,6 +75,7 @@ class MyPublisherNode(DTROS):
 
 if __name__ == '__main__':
     node = MyPublisherNode(node_name='my_publisher_node')
+    rospy.on_shutdown(node.on_shutdown)
     node.run()
     rospy.spin()
 

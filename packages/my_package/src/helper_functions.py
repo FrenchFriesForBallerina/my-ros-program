@@ -7,3 +7,5 @@ def int_to_bitblock(read):
             indices.append(idx + 1)
 
     return bits, indices
+
+# def check_branching(bits):
