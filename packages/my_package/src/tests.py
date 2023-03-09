@@ -2,7 +2,7 @@ from cruise_control import *
 
 
 def test1():
-    print("Passed 1: all good" if 1 == 1 else "Failed")
+    print("Sanity check passed" if 1 == 1 else "Failed")
 
 
 def test_branch_detection(read):

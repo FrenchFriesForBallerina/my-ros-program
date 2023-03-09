@@ -1,7 +1,7 @@
 import re
 
 from helper_functions import int_to_bitblock
-from statistics import mean
+import statistics
 import time
 
 
@@ -12,7 +12,7 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
 
     if len(indices) != 0:
         last_error = error
-        error = target - mean(indices)
+        error = target - statistics.mean(indices)
         pid_controller.apply_controller(car, error, last_error)
 
     else:
@@ -20,7 +20,7 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
         car.speed_right_wheel = 0
 
 
-def branching_off_ahead(binary, car):  # '00110011
+def branching_off_ahead(binary, car):
     print('binary is ', binary)
     m = re.search('^1+1?0+0?1+1?0+$', binary)
     if m:

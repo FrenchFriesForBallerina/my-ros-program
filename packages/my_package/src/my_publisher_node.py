@@ -35,6 +35,10 @@ roadsign_confirmed = False
 car = Car(vehicle_speed)
 pid_controller = PID_Controller(Kp, Ki, Kd, I, rospy_rate)
 
+# node - sub v pub v ( sub ja pub)
+# topic - nt  '/weirdbot/wheels_driver_node/wheels_cmd'
+# message - pub/sub saadetud
+
 
 class MyPublisherNode(DTROS):
     def __init__(self, node_name):
