@@ -19,7 +19,7 @@ dt-launchfile-init
 #dt-exec rosrun my_package my_publisher_node.py
 #dt-exec rosrun my_package my_subscriber_node.py
 
-roslaunch my_package multiple_nodes.launch
+roslaunch my_package multiple_nodes.launch veh:=$VEHICLE_NAME
 
 # ----------------------------------------------------------------------------
 # YOUR CODE ABOVE THIS LINE
