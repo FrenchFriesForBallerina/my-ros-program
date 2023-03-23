@@ -4,6 +4,7 @@ import rospy
 from duckietown_msgs.msg import WheelsCmdStamped
 from smbus2 import SMBus
 
+from helper_functions import int_to_bitblock
 speed = WheelsCmdStamped()
 
 sparkfun_device_aadress = 62
@@ -35,10 +36,13 @@ def LineFollower():
         read = bus.read_byte_data(
             sparkfun_device_aadress, sparkfun_registry_address)
         print('read:', read)
+        bits_block, indices = int_to_bitblock(read)
+        print('bits_block, indices:', bits_block, indices)
+
         #speed.vel_left = speed
         #speed.vel_right = speed
         # pub.publish(speed)
-        # bus.close() - is it even necessary?
+        bus.close()
 
 
 if __name__ == '__main__':
