@@ -3,6 +3,12 @@ project(my_package)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  message_generation
+)
+
+add_message_files(
+  FILES
+  SparkfunRead.msg
 )
 
 catkin_package()

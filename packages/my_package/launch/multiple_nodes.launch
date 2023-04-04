@@ -1,6 +1,6 @@
 <launch>
   <group ns="$(arg veh)">  
-  <node pkg="my_package" type="line_follower.py" name="line_follower" output="screen"/>
+  <node pkg="my_package" type="pub_sparkfun_read.py" name="pub_sparkfun_read" output="screen"/>
   <!-- <node pkg="my_package" type="line_follow.py" name="line_follow_listener" output="screen"/> -->
 <!--   <node pkg="my_package" type="talker.py" name="talker" />
  -->
