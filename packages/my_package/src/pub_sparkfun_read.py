@@ -3,8 +3,9 @@ import rospy
 
 from duckietown_msgs.msg import WheelsCmdStamped
 from smbus2 import SMBus
+from std_msgs.msg import String
 
-from helper_functions import int_to_bitblock
+#from helper_functions import int_to_bitblock
 speed = WheelsCmdStamped()
 
 sparkfun_device_aadress = 62
@@ -27,7 +28,7 @@ def stopMoving():
     speed.vel_left = 0
     speed.vel_right = 0
     print('stopping')
-    pub.publish(speed)
+    # pub_wheels.publish(speed)
 
 
 def LineFollower():
@@ -36,12 +37,11 @@ def LineFollower():
         read = bus.read_byte_data(
             sparkfun_device_aadress, sparkfun_registry_address)
         print('read:', read)
-        bits_block, indices = int_to_bitblock(read)
-        print('bits_block, indices:', bits_block, indices)
-
+        #bits_block = int_to_bitblock(read)
+        #print('bits_block:', bits_block)
         #speed.vel_left = speed
         #speed.vel_right = speed
-        # pub.publish(speed)
+        # pub_wheels.publish(speed)
         bus.close()
 
 
@@ -49,13 +49,19 @@ if __name__ == '__main__':
 
     try:
         rospy.on_shutdown(stopMoving)
-        rospy.init_node('line_follower', anonymous=True)
+        rospy.init_node('pub_sparkfun_read')
 
-        pub = rospy.Publisher(
-            '/weirdbot/wheels_driver_node/wheels_cmd', WheelsCmdStamped, queue_size=10)
-        sub = rospy.Subscriber(
+        """ pub_wheels = rospy.Publisher(
+            '/weirdbot/wheels_driver_node/wheels_cmd', WheelsCmdStamped, queue_size=10) """
+
+        pub_sparkfun_read = rospy.Publisher(
+            '/weirdbot/pub_sparkfun_read', String, queue_size=10)
+
+        pub_sparkfun_read.publish("hi there")
+
+        """ sub_wheels = rospy.Subscriber(
             '/weirdbot/wheels_driver_node/wheels_cmd', WheelsCmdStamped, callback)
-
+        """
         rate = rospy.Rate(10)
 
         LineFollower()

@@ -10,4 +10,4 @@ def int_to_bitblock(read):
         if temp - binary_values[i] >= 0:
             temp -= binary_values[i]
             indices.append(i + 1)
-    return bits, indices
+    return bits  # , indices
