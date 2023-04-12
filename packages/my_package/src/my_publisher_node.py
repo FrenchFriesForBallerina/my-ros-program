@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+import time
 
 from cruise_control import cruise_control
 from Car import Car
@@ -9,18 +10,15 @@ from duckietown.dtros import DTROS, NodeType
 from smbus2 import SMBus
 from duckietown_msgs.msg import WheelsCmdStamped
 
-sparkfun_device_aadress = 62
+sparkfun_device_address = 62
 sparkfun_registry_address = 17
 target_sensor_position = 4.5
-vehicle_speed = 0.5  # 0.6
+vehicle_speed = 0.2
 rospy_rate = 40
 
-# speed 0.6 rospy rate 40, kp 0.525 ja teised 0 sõidab (ristmikel muidugi pea)
-Kp = 0.4
-# speed 0.6 rospy rate 40, kp 1.2 ja kp 1.5 ja teised 0 - tõmbleb koha peal
-# sama, aga 0.95 - tõmbleb ja liigub edasi
-Ki = 0
-Kd = 0  # 10 * Kp
+Kp = 0.1
+Ki = 0.004
+Kd = 0.16
 I = 0
 
 speed = WheelsCmdStamped()
@@ -34,10 +32,6 @@ roadsign_confirmed = False
 
 car = Car(vehicle_speed)
 pid_controller = PID_Controller(Kp, Ki, Kd, I, rospy_rate)
-
-# node - sub v pub v ( sub ja pub)
-# topic - nt  '/weirdbot/wheels_driver_node/wheels_cmd'
-# message - pub/sub saadetud
 
 
 class MyPublisherNode(DTROS):
@@ -62,16 +56,28 @@ class MyPublisherNode(DTROS):
         while not rospy.is_shutdown():
             bus = SMBus(1)
             read = bus.read_byte_data(
-                sparkfun_device_aadress, sparkfun_registry_address)
+                sparkfun_device_address, sparkfun_registry_address)
 
             cruise_control(error, last_error, read,
                            target_sensor_position, pid_controller, car)
 
-            speed.vel_right = car.speed_right_wheel
-            speed.vel_left = car.speed_left_wheel
+            if car.turn_at_next_left:
+                print('turning at next left')
+                speed.vel_right = 0
+                speed.vel_left = 0
+                self.pub.publish(speed)
+                time.sleep(1)
+
+            else:
+                speed.vel_right = car.speed_right_wheel
+                speed.vel_left = car.speed_left_wheel
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
+
+        def activate_junction_behavior(self):
+            
+            pass
 
     def run(self):
         self.simple_track()
@@ -82,7 +88,3 @@ if __name__ == '__main__':
     rospy.on_shutdown(node.on_shutdown)
     node.run()
     rospy.spin()
-
-# https://se.mathworks.com/help/supportpkg/arduino/ref/arduino-robot-line-follower-application.html
-# check https://answers.ros.org/question/264812/explanation-of-rospyrate/
-# https://www.youtube.com/watch?v=wkfEZmsQqiA

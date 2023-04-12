@@ -1,14 +1,15 @@
-import re
-
-from helper_functions import int_to_bitblock
+from helper_functions import int_to_bitblock, timer
 import statistics
-import time
 
 
 def cruise_control(error, last_error, read, target, pid_controller, car):
     bits_block, indices = int_to_bitblock(read)
-    #print('bits_block is', bits_block)
-    branching_off_ahead(bits_block, car)
+
+    if branching_off_ahead(bits_block):
+        print('BRANCHING -------------------------------------------------------')
+        car.branching_off_first_detection = True
+        car.turn_at_next_left = True
+        return
 
     if len(indices) != 0:
         last_error = error
@@ -20,34 +21,12 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
         car.speed_right_wheel = 0
 
 
-def branching_off_ahead(binary, car):
+def branching_off_ahead(binary):
     print('binary is ', binary)
-    m = re.search('^1+1?0+0?1+1?0+$', binary)
-    if m:
-        if car.branching_off_first_detection == False:
-            car.branching_off_first_detection = True
-            print('match:', m[0])
-        else:
-            car.branching_off_confirmed = True
-            # if binary[]
-
-            # '10011000'
-            # '00010010'
-
-            car.turn_
-        print("--first detection:", car.branching_off_first_detection,
-              "\n-- detection confirmed:", car.branching_off_confirmed)
-    else:
-        print('nope')
-
-    # reads two zeros between ones
-
-    # if branching off ahead, remember what side the sign was on
-    # to define, what side it was on, see which line continues and which doesn't
-    # the one that doesn't is the direction of the turn ahead
-    # remember the side to turn to - global variable like a switch True
-
-    # need another function that determines if branching is detected
-
-    # if branching is detected, turn to the according side (left/right)
-    # after turning, switch the variable back to False
+    left_turn = ['00110110', '00110100', '01100010', '01100100', '01101100',
+                 '11100110', '11101100', '11000100', '11001100', '11011000']
+    if binary in left_turn:
+        print('I SEE ROADSIGN')
+        print('im AWAKE')
+        print("I WILL STOP")
+        return True
