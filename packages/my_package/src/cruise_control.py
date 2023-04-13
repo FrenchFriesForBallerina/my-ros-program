@@ -1,4 +1,4 @@
-from helper_functions import int_to_bitblock, timer
+from helper_functions import int_to_bitblock
 import statistics
 
 
@@ -7,7 +7,6 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
 
     if branching_off_ahead(bits_block):
         print('BRANCHING -------------------------------------------------------')
-        car.branching_off_first_detection = True
         car.turn_at_next_left = True
         return
 
@@ -26,7 +25,4 @@ def branching_off_ahead(binary):
     left_turn = ['00110110', '00110100', '01100010', '01100100', '01101100',
                  '11100110', '11101100', '11000100', '11001100', '11011000']
     if binary in left_turn:
-        print('I SEE ROADSIGN')
-        print('im AWAKE')
-        print("I WILL STOP")
         return True

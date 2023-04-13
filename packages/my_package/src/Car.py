@@ -11,5 +11,3 @@ class Car():
     def forward(self):
         self.speed_left_wheel = self.velocity
         self.speed_right_wheel = self.speed_left_wheel
-
-    # def turn_at_junction(self):

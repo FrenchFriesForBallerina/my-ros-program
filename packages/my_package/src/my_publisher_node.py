@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import time
+from helper_functions import Weird_timer, detect_atypical_road_conditions
 
 from cruise_control import cruise_control
 from Car import Car
@@ -25,11 +26,6 @@ speed = WheelsCmdStamped()
 error = 0
 last_error = 0
 
-turn_left_at_junction = False
-turn_right_at_junction = False
-roadsign_first_detection = False
-roadsign_confirmed = False
-
 car = Car(vehicle_speed)
 pid_controller = PID_Controller(Kp, Ki, Kd, I, rospy_rate)
 
@@ -47,37 +43,61 @@ class MyPublisherNode(DTROS):
         self.pub.publish(speed)
         rospy.on_shutdown()
 
+    def stopper(self, binary):
+        v = 0
+        while v < 2:
+            time.sleep(0.17)
+            v += 1
+            if binary == '00000000':
+                car.speed_right_wheel = 0
+                car.speed_left_wheel = 0
+                self.pub.publish(speed)
+            else:
+                print("Bad Magda!")
+
     def simple_track(self):
         global error
         global last_error
 
         rate = rospy.Rate(rospy_rate)
 
+        def activate_junction_behavior():
+            if detect_atypical_road_conditions(read):
+                print(
+                    '################## ATYPICAL ROAD CONDITIONS #####################')
+
         while not rospy.is_shutdown():
+
             bus = SMBus(1)
             read = bus.read_byte_data(
                 sparkfun_device_address, sparkfun_registry_address)
 
-            cruise_control(error, last_error, read,
-                           target_sensor_position, pid_controller, car)
+            binary = bin(read)[2:].zfill(8)
 
+            if binary == '00000000':
+                self.stopper(binary)
             if car.turn_at_next_left:
                 print('turning at next left')
-                speed.vel_right = 0
-                speed.vel_left = 0
-                self.pub.publish(speed)
-                time.sleep(1)
-
+                x = 0
+                while x < 2:
+                    car.speed_right_wheel = 0.22
+                    car.speed_left_wheel = 0.2
+                    speed.vel_right = car.speed_right_wheel
+                    speed.vel_left = car.speed_left_wheel
+                    self.pub.publish(speed)
+                    rospy.sleep(0.4)
+                    x = x + 1
+                car.turn_at_next_left = False
+                print('after sleep')
             else:
-                speed.vel_right = car.speed_right_wheel
-                speed.vel_left = car.speed_left_wheel
+                cruise_control(error, last_error, read,
+                               target_sensor_position, pid_controller, car)
+
+            speed.vel_right = car.speed_right_wheel
+            speed.vel_left = car.speed_left_wheel
             self.pub.publish(speed)
             rate.sleep()
             bus.close()
-
-        def activate_junction_behavior(self):
-            
-            pass
 
     def run(self):
         self.simple_track()
