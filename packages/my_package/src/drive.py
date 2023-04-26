@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
+""" #!/usr/bin/env python3
 import rospy
 import time
-from helper_functions import Weird_timer, detect_atypical_road_conditions
 
 from cruise_control import cruise_control
 from Car import Car
@@ -13,6 +12,7 @@ from duckietown_msgs.msg import WheelsCmdStamped
 
 sparkfun_device_address = 62
 sparkfun_registry_address = 17
+
 target_sensor_position = 4.5
 vehicle_speed = 0.2
 rospy_rate = 40
@@ -49,22 +49,14 @@ class MyPublisherNode(DTROS):
             time.sleep(0.17)
             v += 1
             if binary == '00000000':
-                car.speed_right_wheel = 0
-                car.speed_left_wheel = 0
+                (car.speed_right_wheel, car.speed_left_wheel) = 0
                 self.pub.publish(speed)
-            else:
-                print("Bad Magda!")
 
     def simple_track(self):
         global error
         global last_error
 
         rate = rospy.Rate(rospy_rate)
-
-        def activate_junction_behavior():
-            if detect_atypical_road_conditions(read):
-                print(
-                    '################## ATYPICAL ROAD CONDITIONS #####################')
 
         while not rospy.is_shutdown():
 
@@ -77,7 +69,6 @@ class MyPublisherNode(DTROS):
             if binary == '00000000':
                 self.stopper(binary)
             if car.turn_at_next_left:
-                print('turning at next left')
                 x = 0
                 while x < 2:
                     car.speed_right_wheel = 0.22
@@ -88,7 +79,6 @@ class MyPublisherNode(DTROS):
                     rospy.sleep(0.4)
                     x = x + 1
                 car.turn_at_next_left = False
-                print('after sleep')
             else:
                 cruise_control(error, last_error, read,
                                target_sensor_position, pid_controller, car)
@@ -104,7 +94,8 @@ class MyPublisherNode(DTROS):
 
 
 if __name__ == '__main__':
-    node = MyPublisherNode(node_name='my_publisher_node')
+    node = MyPublisherNode(node_name='LF_publisher')
     rospy.on_shutdown(node.on_shutdown)
     node.run()
     rospy.spin()
+ """

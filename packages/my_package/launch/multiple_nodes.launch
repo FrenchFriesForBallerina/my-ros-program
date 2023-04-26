@@ -1,6 +1,4 @@
 <launch>
-
-  <node pkg="my_package" type="my_publisher_node.py" name="my_publisher_node" output="screen"/>
-  <!-- <node pkg="my_package" type="my_subscriber_node.py" name="my_subscriber_node"  output="screen"/> -->
-
+  <node pkg="my_package" type="LF_publisher.py" name="LF" output="screen"/> 
+  <node pkg="my_package" type="TOF_subscriber.py" name="TOF"  output="screen"/>
 </launch>
