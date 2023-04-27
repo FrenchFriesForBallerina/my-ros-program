@@ -88,7 +88,7 @@ class Drive(DTROS):
         self.pub.publish(speed)
 
     def turn_left(self):
-        car.speed_right_wheel = 0.8
+        car.speed_right_wheel = 0.9
         car.speed_left_wheel = 0
         speed.vel_right = car.speed_right_wheel
         speed.vel_left = car.speed_left_wheel
@@ -142,6 +142,12 @@ class Drive(DTROS):
                 print(binary)
                 car.obstacle_ahead = False
                 while binary == '00000000':
+                    read = bus.read_byte_data(
+                        sparkfun_device_address, sparkfun_registry_address)
+                    binary = bin(read)[2:].zfill(8)
+                    if binary != '00000000':
+                        break
+                    print(binary)
                     self.move_forward_constantly()
             else:
                 cruise_control(error, last_error, read,
