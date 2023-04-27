@@ -21,7 +21,7 @@ def cruise_control(error, last_error, read, target, pid_controller, car):
 
 
 def branching_off_ahead(binary):
-    print('binary is ', binary)
+    #print('binary is ', binary)
     left_turn = ['00110110', '00110100', '01100010', '01100100', '01101100',
                  '11100110', '11101100', '11000100', '11001100', '11011000']
     if binary in left_turn:
