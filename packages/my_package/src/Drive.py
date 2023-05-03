@@ -26,9 +26,11 @@ I = 0
 speed = WheelsCmdStamped()
 error = 0
 last_error = 0
-
+tof_distance = 0
+obstacle_avoidance_distance = 25
 
 class Drive(DTROS):
+    
 
     def __init__(self, node_name):
         super(Drive, self).__init__(
@@ -37,20 +39,20 @@ class Drive(DTROS):
             '/weirdbot/wheels_driver_node/wheels_cmd', WheelsCmdStamped, queue_size=10)
         self.sub = rospy.Subscriber(
             "/weirdbot/front_center_tof_driver_node/range", Range, self.obstacle_callback)
-        self.sub = rospy.Subscriber(
-            "/weirdbot/left_wheel_encoder_node/tick", WheelEncoderStamped, self.tick_callback)
+        """ self.sub = rospy.Subscriber(
+            "/weirdbot/left_wheel_encoder_node/tick", WheelEncoderStamped, self.tick_callback) """
         self.car = Car(0.2)
         self.pid_controller = PID_Controller(0.1, 0.004, 0.16, 0, 40)
 
     def obstacle_callback(self, data):
-        distance = round(data.range * 100)
-        if distance < 25:
-            print('I am close: %s cm', distance)
+        tof_distance = round(data.range * 100)
+        if tof_distance < obstacle_avoidance_distance:
+            print('I am close: %s cm', tof_distance)
             self.car.obstacle_ahead = True
             # activate the drive around the obstacle part
 
-    def tick_callback(self, data):
-        print("TICKSSSSSS", data.data)
+    """     def tick_callback(self, data):
+        print("TICKSSSSSS", data.data) """
 
     def on_shutdown(self):
         speed = WheelsCmdStamped()
@@ -105,6 +107,18 @@ class Drive(DTROS):
         self.publish_speed()
         time.sleep(0.3)
 
+    def turn_right_a_little_bit(self):
+        self.car.speed_right_wheel = -0.2
+        self.car.speed_left_wheel = 0.6
+        self.publish_speed()
+        time.sleep(0.1)
+
+    def turn_left_a_little_bit(self):
+        self.car.speed_right_wheel = 0.3
+        self.car.speed_left_wheel = 0
+        self.publish_speed()
+        time.sleep(0.1)
+
     def publish_speed(self):
         speed = WheelsCmdStamped()
         speed.vel_left = self.car.speed_left_wheel
@@ -126,15 +140,21 @@ class Drive(DTROS):
 
             """ if binary == '00000000':
                 self.stopper(binary) """
-            if self.car.turn_at_next_left:
+            """  if self.car.turn_at_next_left:
                 for _ in range(2):
                     self.car.speed_right_wheel = 0.22
                     self.car.speed_left_wheel = 0.2
                     self.publish_speed()
                     rospy.sleep(0.4)
-                self.car.turn_at_next_left = False
-            elif self.car.obstacle_ahead:
+                self.car.turn_at_next_left = False """
+            #elif self.car.obstacle_ahead:
+            if self.car.obstacle_ahead:
                 print('AVOIDING OBSTACLE')
+                while tof_distance < obstacle_avoidance_distance:
+                    if tof_distance >= obstacle_avoidance_distance:
+                        break
+                    self.turn_right_a_little_bit()
+                
                 self.stop_for_03_sec()
                 self.car.obstacle_ahead = False
                 """ self.turn_right()
