@@ -11,4 +11,4 @@ class Car():
 
     def forward(self):
         self.speed_left_wheel = self.velocity
-        self.speed_right_wheel = self.speed_left_wheel
+        self.speed_right_wheel = self.velocity
